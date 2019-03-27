@@ -28,19 +28,20 @@ def post(db, cursor, tablename, value):
     if tablename == 'prints':
         return "Error: Can't post directly into Prints"
 
-
-
 @app.route('/<tablename>', defaults={'value': None})
 @app.route('/<tablename>/<value>', methods=['GET', 'POST'])
 def general(tablename, value):
     db, cursor = conDB()
     
-    result = ""
+    result = {
+        "data": []
+    }
+
     if request.method == 'GET':
-        result = get(db, cursor, tablename)
+        result["data"] = get(db, cursor, tablename)
     elif request.method == 'POST':
         post(db, cursor, tablename, value)
-
+    
     cloDB(db)
     return jsonify(result)
 

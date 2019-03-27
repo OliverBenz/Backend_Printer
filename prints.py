@@ -2,9 +2,7 @@ def get(db, cursor):
     sql = "SELECT * FROM prints"
     cursor.execute(sql)
     result = cursor.fetchall()
-    prints = {
-        "data": []
-    }
+    prints = []
     for row in result:
         data = {
             "id": row[0],
@@ -16,7 +14,7 @@ def get(db, cursor):
             "price": row[6],
             "time_real": row[7]
         }
-        prints["data"].append(data)
+        prints.append(data)
 
     return prints
 
