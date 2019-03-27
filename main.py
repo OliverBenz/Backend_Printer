@@ -42,7 +42,7 @@ def general(tablename, value):
         post(db, cursor, tablename, value)
 
     cloDB(db)
-    return str(result)
+    return jsonify(str(result))
 
 # Main
 if __name__ == "__main__":
