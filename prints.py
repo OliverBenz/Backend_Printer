@@ -1,7 +1,10 @@
 def get(db, cursor):
-    sql = "SELECT id, filename FROM prints"
+    sql = "SELECT * FROM prints"
     cursor.execute(sql)
     result = cursor.fetchall()
+    for a in result:
+        print('id: ', a[0])
+        print('filename: ', a[1])
     
     return result
 

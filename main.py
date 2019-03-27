@@ -28,6 +28,8 @@ def post(db, cursor, tablename, value):
     if tablename == 'prints':
         return "Error: Can't post directly into Prints"
 
+
+
 @app.route('/<tablename>', defaults={'value': None})
 @app.route('/<tablename>/<value>', methods=['GET', 'POST'])
 def general(tablename, value):
