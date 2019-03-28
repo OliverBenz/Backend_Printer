@@ -3,6 +3,8 @@ def get(db, cursor):
     cursor.execute(sql)
     result = cursor.fetchall()
     prints = []
+
+    # TODO: Move into a datapreparer Function
     for row in result:
         data = {
             "id": row[0],
