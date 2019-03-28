@@ -30,7 +30,7 @@ def addPrint(db, cursor, obj):
 
     # Execute Script
     cursor.execute(sql, val)
-    db.commit()
+    
 
     return ""
 
@@ -41,14 +41,15 @@ def addHistory(db, cursor, obj):
     fd.close()
     print(sql)
     # Gen Value
-    val = (obj["usr"], obj["amount"], obj["date"], obj["date_till"], 0, 0, obj["filename"])
+    val = (obj["usrid"], obj["amount"], obj["date"], obj["date_until"], 0, 0, obj["filename"])
 
     cursor.execute(sql, val)
-    db.commit()
 
     return ""
 
-def newPrint(db, cursor, filename):
-    obj = formatName(filename)
+def newPrint(db, cursor, obj):
+    # obj = formatName(obj)
     addPrint(db, cursor, obj)
     addHistory(db, cursor, obj)
+
+    db.commit()

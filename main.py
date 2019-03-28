@@ -2,7 +2,7 @@ import mysql.connector
 from flask import Flask, request, jsonify
 import json
 
-import prints, status
+import prints, status, user
 import postQueue
 
 app = Flask(__name__)
@@ -27,16 +27,13 @@ def get(db, cursor, tablename):
     if tablename == 'status':
         return status.get(db, cursor)
 
-def post(db, cursor, tablename, value):
-    if tablename == 'prints':
-        return "Error: Can't post directly into Prints"
 
 
 # ------------------------------------------------------------------------
 
 
 @app.route('/<tablename>', defaults={'value': None})
-@app.route('/<tablename>/<value>', methods=['GET', 'POST'])
+@app.route('/<tablename>/<value>', methods=['GET'])
 def general(tablename, value):
     db, cursor = conDB()
     
@@ -46,23 +43,30 @@ def general(tablename, value):
 
     if request.method == 'GET':
         result["data"] = get(db, cursor, tablename)
-    elif request.method == 'POST':
-        post(db, cursor, tablename, value)
+    else:
+        print("Error. Invalid method")
     
     cloDB(db)
     return jsonify(result)
 
-@app.route('/add/<filename>', methods=['POST'])
-def addPrint(filename):
+@app.route('/add', methods=['POST'])
+def addPrint():
     db, cursor = conDB()
     # Filename:     filename-name-time-length-weight-price-usrid-amount-date-date_till
-
+    obj = request.get_json()
     # TODO: Format filename and add to tables
-    postQueue.newPrint(db, cursor, filename)
+    postQueue.newPrint(db, cursor, obj)
 
     cloDB(db)
     return ""
 
+@app.route('/login/<info>', methods=['GET'])
+def login(info):
+    db, cursor = conDB()
+
+    user.login(db, cursor, info)
+
+    cloDB(db)
 
 # Main
 if __name__ == "__main__":
