@@ -1,5 +1,10 @@
-def get(db, cursor):
-    sql = "SELECT * FROM prints"
+def get(db, cursor, value):
+    value = value.replace("-", " ")
+    
+    fd = open('scripts/get/prints.sql', 'r')
+    sql = fd.read() % value
+    fd.close()
+
     cursor.execute(sql)
     result = cursor.fetchall()
     prints = []

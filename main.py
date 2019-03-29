@@ -21,9 +21,9 @@ def conDB():
 def cloDB(db):
     db.close()
 
-def get(db, cursor, tablename):
+def get(db, cursor, tablename, value):
     if tablename == 'prints':
-        return prints.get(db, cursor)
+        return prints.get(db, cursor, value)
     if tablename == 'status':
         return status.get(db, cursor)
 
@@ -42,7 +42,7 @@ def general(tablename, value):
     }
 
     if request.method == 'GET':
-        result["data"] = get(db, cursor, tablename)
+        result["data"] = get(db, cursor, tablename, value)
     else:
         print("Error. Invalid method")
     
@@ -51,13 +51,18 @@ def general(tablename, value):
 
 @app.route('/add', methods=['POST'])
 def addPrint():
-    db, cursor = conDB()
-    # Filename:     filename-name-time-length-weight-price-usrid-amount-date-date_till
-    obj = request.get_json()
-    # TODO: Format filename and add to tables
-    postQueue.newPrint(db, cursor, obj)
+    # db, cursor = conDB()
+    # Filename:     usrid-amount-date-date_until-filename-name-time-length-weight-price
+    print("---------------------------------")
+    print(request.is_json)
+    content = request.get_json()
+    print(content["name"])
 
-    cloDB(db)
+
+    # TODO: Format filename and add to tables
+    # postQueue.newPrint(db, cursor, obj)
+
+    # cloDB(db)
     return ""
 
 @app.route('/login/<info>', methods=['GET'])
