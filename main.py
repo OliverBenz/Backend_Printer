@@ -36,14 +36,14 @@ def addPrint():
     cloDB(db)
     return ""
 
-@app.route('/login/<info>', methods=['GET'])
-def login(info):
+@app.route('/login/', methods=['POST'])
+def login():
     db, cursor = conDB()
 
-    user.login(db, cursor, info)
+    sessionId = user.login(db, cursor, request.json)
 
     cloDB(db)
-
+    return '{"sessionId": %s}' % sessionId
 
 # ------------------------------------------------------------------------
 
