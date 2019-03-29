@@ -36,10 +36,21 @@ def addPrint():
     cloDB(db)
     return ""
 
-@app.route('/login/', methods=['POST'])
+@app.route('/user/login', methods=['POST'])
 def login():
     db, cursor = conDB()
 
+    sessionId = user.login(db, cursor, request.json)
+
+    cloDB(db)
+    return '{"sessionId": %s}' % sessionId
+
+@app.route('/user/changepw', methods=['POST'])
+def changePassword():
+    db, cursor = conDB()
+
+    # Get sessionId, password to verify that the user is logged in and knows the password
+    # return new sessionId so the user can stay logged in
     sessionId = user.login(db, cursor, request.json)
 
     cloDB(db)

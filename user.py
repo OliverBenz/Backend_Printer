@@ -14,23 +14,10 @@ def login(db, cursor, info):
         sql  = "SELECT sessionId FROM user WHERE name = '%s'" % (info["username"])
         cursor.execute(sql)
         result = cursor.fetchall()
-        
+
         return result[0][0]
     else:
         return "Wrong password"
-
-
-
-# Bcrypt Functions
-def compare(password, hash):
-    return bcrypt.checkpw(password.encode('utf-8'), hash.encode('utf-8'))
-
-def encrypt(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
-def genSessionId(username, password):
-    # TODO: Create real session ID
-    return encrypt(username + password)
 
 def newUser(db, cursor, username, password):
     fd = open('scripts/post/user.sql', 'r')
@@ -44,3 +31,17 @@ def newUser(db, cursor, username, password):
     
     return ""
 
+def changePassword():
+    return ""
+
+
+# ----- Bcrypt Functions -----
+def compare(password, hash):
+    return bcrypt.checkpw(password.encode('utf-8'), hash.encode('utf-8'))
+
+def encrypt(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+def genSessionId(username, password):
+    # TODO: Create real session ID
+    return encrypt(username + password)
