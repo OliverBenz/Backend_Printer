@@ -2,10 +2,51 @@ import mysql.connector
 from flask import Flask, request, jsonify
 import json
 
-import prints, status, user
-import postQueue
+import queue, postPrint, status, user
 
 app = Flask(__name__)
+
+
+# ------------------------------------------------------------------------
+
+
+@app.route('/<tablename>', defaults={'value': None})
+@app.route('/<tablename>/<value>', methods=['GET'])
+def general(tablename, value):
+    db, cursor = conDB()
+    
+    result = { "data": [] }
+
+    if request.method == 'GET':
+        result["data"] = get(db, cursor, tablename, value)
+    else:
+        print("Error. Invalid method")
+    
+    cloDB(db)
+    return jsonify(result)
+
+@app.route('/add', methods=['POST'])
+def addPrint():
+    db, cursor = conDB()
+    # Filename:     usrid-amount-date-date_till-filename-name-time-length-weight-price
+
+    # TODO: Format filename and add to tables
+    postPrint.newPrint(db, cursor, request.json)
+
+    cloDB(db)
+    return ""
+
+@app.route('/login/<info>', methods=['GET'])
+def login(info):
+    db, cursor = conDB()
+
+    user.login(db, cursor, info)
+
+    cloDB(db)
+
+
+# ------------------------------------------------------------------------
+
 
 def conDB():
     db = mysql.connector.connect(
@@ -22,56 +63,11 @@ def cloDB(db):
     db.close()
 
 def get(db, cursor, tablename, value):
-    if tablename == 'prints':
-        return prints.get(db, cursor, value)
+    if tablename == 'queue':
+        return queue.get(db, cursor, value)
     if tablename == 'status':
         return status.get(db, cursor)
 
-
-
-# ------------------------------------------------------------------------
-
-
-@app.route('/<tablename>', defaults={'value': None})
-@app.route('/<tablename>/<value>', methods=['GET'])
-def general(tablename, value):
-    db, cursor = conDB()
-    
-    result = {
-        "data": []
-    }
-
-    if request.method == 'GET':
-        result["data"] = get(db, cursor, tablename, value)
-    else:
-        print("Error. Invalid method")
-    
-    cloDB(db)
-    return jsonify(result)
-
-@app.route('/add', methods=['POST'])
-def addPrint():
-    # db, cursor = conDB()
-    # Filename:     usrid-amount-date-date_until-filename-name-time-length-weight-price
-    print("---------------------------------")
-    print(request.is_json)
-    content = request.get_json()
-    print(content["name"])
-
-
-    # TODO: Format filename and add to tables
-    # postQueue.newPrint(db, cursor, obj)
-
-    # cloDB(db)
-    return ""
-
-@app.route('/login/<info>', methods=['GET'])
-def login(info):
-    db, cursor = conDB()
-
-    user.login(db, cursor, info)
-
-    cloDB(db)
 
 # Main
 if __name__ == "__main__":

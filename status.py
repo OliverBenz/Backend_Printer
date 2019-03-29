@@ -1,9 +1,8 @@
 def get(db, cursor):
-    sql = "SELECT * FROM status"
+    sql = "SELECT * FROM status ORDER BY id ASC"
     cursor.execute(sql)
     result = cursor.fetchall()
     status = []
-
     # TODO: Move into a datapreparer Function
     for row in result:
         data = {

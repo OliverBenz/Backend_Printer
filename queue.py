@@ -1,6 +1,6 @@
 def get(db, cursor, value):
     value = value.replace("-", " ")
-    
+    print(value)
     fd = open('scripts/get/prints.sql', 'r')
     sql = fd.read() % value
     fd.close()
@@ -18,8 +18,7 @@ def get(db, cursor, value):
             "time": row[3],
             "length": row[4],
             "weight": row[5],
-            "price": row[6],
-            "time_real": row[7]
+            "price": row[6]
         }
         prints.append(data)
 

@@ -1,13 +1,11 @@
 INSERT INTO history VALUES (
 	0,
 	%s,
-	0,
-	-- SELECT id FROM spool WHERE status_id = (SELECT id FROM status WHERE name = "Active"),
+	(SELECT s.id FROM spool s WHERE s.statusId = (SELECT st.id FROM status st WHERE st.name = 'Active')),
 	%s,
-	(SELECT status.id FROM status WHERE status.name = 'To Do'),
-	%s,
+	(SELECT s.id FROM status s WHERE s.name = 'To Do'),
 	%s,
 	%s,
 	%s,
-	(SELECT prints.id FROM prints WHERE prints.filename = %s)
-)
+	%s
+);

@@ -7,4 +7,4 @@ INSERT INTO prints VALUES(
 	%s,
 	%s,
 	%s
-)
+);
