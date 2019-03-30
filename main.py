@@ -25,6 +25,7 @@ def general(tablename, value):
     cloDB(db)
     return jsonify(result)
 
+
 @app.route('/add', methods=['POST'])
 def addPrint():
     db, cursor = conDB()
@@ -36,6 +37,7 @@ def addPrint():
     cloDB(db)
     return ""
 
+
 @app.route('/user/login', methods=['POST'])
 def login():
     db, cursor = conDB()
@@ -44,6 +46,7 @@ def login():
 
     cloDB(db)
     return '{"sessionId": %s}' % sessionId
+
 
 @app.route('/user/changepw', methods=['POST'])
 def changePassword():
@@ -55,6 +58,7 @@ def changePassword():
 
     cloDB(db)
     return '{"sessionId": %s}' % sessionId
+
 
 # ------------------------------------------------------------------------
 
