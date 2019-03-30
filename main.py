@@ -5,7 +5,11 @@ import json
 import queue, postPrint, status, user
 
 app = Flask(__name__)
-
+httpHeaders = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE",
+}
 
 # ------------------------------------------------------------------------
 
