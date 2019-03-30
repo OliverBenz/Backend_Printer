@@ -2,7 +2,7 @@ import mysql.connector
 from flask import Flask, request, jsonify
 import json
 
-import queue, postPrint, status, user
+import queue, postPrint, status, user, history
 
 app = Flask(__name__)
 httpHeaders = {
@@ -63,7 +63,15 @@ def changePassword():
     cloDB(db)
     return '{"sessionId": %s}' % sessionId
 
+@app.route('/user/history/<sessionId>', methods=['GET'])
+def getUserHistory(sessionId):
+    db, cursor = conDB()
 
+    result = { "data": [] }
+    result["data"] = history.getUserHistory(db, cursor, sessionId)
+
+    cloDB(db)
+    return jsonify(result)
 # ------------------------------------------------------------------------
 
 

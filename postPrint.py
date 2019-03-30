@@ -1,4 +1,7 @@
 def newPrint(db, cursor, obj):
+    # TODO: Check if session ID exists
+
+
     # Print
     fd = open('scripts/post/print.sql', 'r')
     sql = fd.read()
@@ -13,8 +16,10 @@ def newPrint(db, cursor, obj):
     sql = fd.read()
     fd.close()
 
-    val = (obj["usrid"], obj["amount"], obj["date"], obj["date_until"], "9999-01-01", int(cursor.lastrowid))
-    
+    val = (obj["sessionId"], obj["amount"], obj["date"], obj["date_until"], "9999-01-01", int(cursor.lastrowid))
+    print(val)
+    print(sql)
+
     # TODO: More beautiful solution
     cursor.execute("SET FOREIGN_KEY_CHECKS=0")
     cursor.execute(sql, val)
