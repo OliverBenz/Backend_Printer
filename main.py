@@ -45,7 +45,7 @@ def login():
     sessionId = user.login(db, cursor, request.json)
 
     cloDB(db)
-    return '{"sessionId": %s}' % sessionId
+    return sessionId
 
 
 @app.route('/user/changepw', methods=['POST'])

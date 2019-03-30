@@ -17,7 +17,7 @@ def login(db, cursor, info):
 
         return result[0][0]
     else:
-        return "Wrong password"
+        return "Error"
 
 def newUser(db, cursor, username, password):
     fd = open('scripts/post/user.sql', 'r')
