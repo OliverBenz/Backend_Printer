@@ -20,8 +20,6 @@ def newPrint(db, cursor, obj):
         obj["date_until"] = "9999-01-01"
 
     val = (obj["sessionId"], obj["amount"], obj["date"], obj["date_until"], "9999-01-01", obj["notes"], int(cursor.lastrowid))
-    print(val)
-    print(sql)
 
     # TODO: More beautiful solution
     cursor.execute("SET FOREIGN_KEY_CHECKS=0")

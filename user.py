@@ -20,8 +20,6 @@ def login(db, cursor, info):
         return "Error"
 
 def register(db, cursor, info):
-    print("test")
-
     fd = open('scripts/post/user.sql', 'r')
     sql = fd.read()
     fd.close()

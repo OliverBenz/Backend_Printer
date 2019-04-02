@@ -32,5 +32,4 @@ def getUserPrints(db, cursor, sessionId, type):
         }
         
         prints.append(data)
-    print(prints)
     return prints
