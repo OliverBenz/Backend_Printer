@@ -1,15 +1,22 @@
+import os
 import mysql.connector
 from flask import Flask, request, jsonify
 import json
+from werkzeug.utils import secure_filename
 
 import queue, postPrint, status, user, userPrints
 
+UPLOAD_FOLDER = '/files'
+ALLOWED_EXTENSIONS = set(['gcode'])
+
 app = Flask(__name__)
-httpHeaders = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE",
-}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# httpHeaders = {
+#     "Content-Type": "application/json",
+#     "Access-Control-Allow-Origin": "*",
+#     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE",
+# }
 
 # ------------------------------------------------------------------------
 
@@ -88,6 +95,15 @@ def getUserHistory(type, sessionId):
 
     cloDB(db)
     return jsonify(result)
+
+
+@app.route('/file', methods=['POST'])
+def fileHandler():
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return ""
+    
 # ------------------------------------------------------------------------
 
 
