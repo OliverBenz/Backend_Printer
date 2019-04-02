@@ -14,22 +14,27 @@ def login(db, cursor, info):
         sql  = "SELECT sessionId FROM user WHERE name = '%s'" % (info["username"])
         cursor.execute(sql)
         result = cursor.fetchall()
-
+        
         return result[0][0]
     else:
         return "Error"
 
-def newUser(db, cursor, username, password):
+def register(db, cursor, info):
+    print("test")
+
     fd = open('scripts/post/user.sql', 'r')
     sql = fd.read()
     fd.close()
+
+    sessionId = genSessionId(info["username"], info["password"])
     
-    val = (username, encrypt(password), genSessionId(username, password))
+    val = (info["username"], info["email"], encrypt(info["password"]), sessionId)
     
     cursor.execute(sql, val)
+
     db.commit()
     
-    return ""
+    return sessionId
 
 def changePassword():
     return ""
@@ -44,4 +49,4 @@ def encrypt(password):
 
 def genSessionId(username, password):
     # TODO: Create real session ID
-    return encrypt(username + password)
+    return "928374" + password

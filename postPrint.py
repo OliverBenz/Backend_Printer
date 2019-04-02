@@ -16,7 +16,10 @@ def newPrint(db, cursor, obj):
     sql = fd.read()
     fd.close()
 
-    val = (obj["sessionId"], obj["amount"], obj["date"], obj["date_until"], "9999-01-01", int(cursor.lastrowid))
+    if obj["date_until"] == "0000-00-00":
+        obj["date_until"] = "9999-01-01"
+
+    val = (obj["sessionId"], obj["amount"], obj["date"], obj["date_until"], "9999-01-01", obj["notes"], int(cursor.lastrowid))
     print(val)
     print(sql)
 

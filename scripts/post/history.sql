@@ -7,5 +7,6 @@ INSERT INTO history VALUES (
 	%s,
 	%s,
 	%s,
+	%s,
 	%s
 );
