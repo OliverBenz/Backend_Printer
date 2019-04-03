@@ -1,5 +1,6 @@
 INSERT INTO user VALUES(
     0,
+    (SELECT ug.id from userGroup ug WHERE ug.name = "User"),
     %s,
     %s,
     %s,

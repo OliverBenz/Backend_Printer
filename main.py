@@ -99,22 +99,31 @@ def getUserHistory(type, sessionId):
 
 @app.route('/file', methods=['POST'])
 def fileHandler():
-    print(request.files)
-    if 'file' not in request.files:
-        print('no file')
-        return ""
-    file = request.files['file']
-    
-    if file.filename == "":
-        print("no selected file")
-        return ""
+    # TODO: Check if filename is in database
+    db, cursor = conDB()
+    # TODO: Check if count syntax is correct
+    sql = "SELECT count(id) from prints where filename = '%s'" % (request.files['file'].filename.replace(".gcode", ""))
+    cursor.execute(sql)
 
-    if file:
-        print(file.filename)
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        # os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        return ""
+    if cursor.fetchall()[0][0] > 0:
+        if 'file' not in request.files:
+            print('no file')
+            return ""
+
+        file = request.files['file']
+        
+        if file.filename == "":
+            print("no selected file")
+            return ""
+
+        if file:
+            print(file.filename)
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            # os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            return ""
+
+    cloDB(db)
 
     return ""
     

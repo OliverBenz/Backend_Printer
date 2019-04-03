@@ -5,7 +5,7 @@ import bcrypt
 def login(db, cursor, info):
     # Important: When using bcrypt functions: string has to be .encode('utf-8')
 
-    sql = "SELECT password FROM user WHERE name = '%s'" % (info["username"])
+    sql = "SELECT password FROM user WHERE email = '%s'" % (info["email"])
     cursor.execute(sql)
     result = cursor.fetchall()
     # print(result[0][0].encode('utf-8'))
