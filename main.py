@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 import queue, postPrint, status, user, userPrints
 
-UPLOAD_FOLDER = '/files'
+UPLOAD_FOLDER = 'D:/Documents/Repositories/printer/printerBackend/files'
 ALLOWED_EXTENSIONS = set(['gcode'])
 
 app = Flask(__name__)
@@ -99,9 +99,23 @@ def getUserHistory(type, sessionId):
 
 @app.route('/file', methods=['POST'])
 def fileHandler():
+    print(request.files)
+    if 'file' not in request.files:
+        print('no file')
+        return ""
     file = request.files['file']
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    
+    if file.filename == "":
+        print("no selected file")
+        return ""
+
+    if file:
+        print(file.filename)
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        return ""
+
     return ""
     
 # ------------------------------------------------------------------------
