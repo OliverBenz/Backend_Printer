@@ -46,5 +46,10 @@ def encrypt(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 def genSessionId(username, password):
+    username = encrypt(username)
+    password = encrypt(password)
+
+    sessionId = username[0:round(len(username) / 2)].lower() + password[round(len(password) / 2):].upper()
+
     # TODO: Create real session ID
-    return "928374" + password
+    return sessionId
