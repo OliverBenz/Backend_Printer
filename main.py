@@ -3,13 +3,15 @@ import mysql.connector
 from flask import Flask, request, jsonify
 import json
 from werkzeug.utils import secure_filename
+from flask_cors import CORS
 
-import queue, postPrint, status, user, userPrints
+import user, prints
 
 UPLOAD_FOLDER = 'D:/Documents/Repositories/printer/printerBackend/files'
 ALLOWED_EXTENSIONS = set(['gcode'])
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/job/*": {"origins": "*"}})
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # httpHeaders = {
@@ -18,115 +20,113 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 #     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE",
 # }
 
-# ------------------------------------------------------------------------
-
-
-@app.route('/<tablename>', defaults={'value': None})
-@app.route('/<tablename>/<value>', methods=['GET'])
-def general(tablename, value):
+@app.route('/user/<type>', methods=['POST'])
+def userHandler(type):
     db, cursor = conDB()
     
-    result = { "data": [] }
+    result = { "success": False, "data": [] }
+    # sessionId = ""
+    code = 500
+
+    if type == 'login':
+        result["data"], result["success"], code = user.login(db, cursor, request.json)
+    if type == 'register':
+        result["data"], result["success"], code = user.register(db, cursor, request.json)
+    if type == 'changepw':
+        result["data"], result["success"], code = user.changePW(db, cursor, request.json)
+    
+    cloDB(db)
+
+    return jsonify(result), code
+
+
+@app.route('/print/<status>', methods=['GET'])
+def printHandler(status):
+    db, cursor = conDB()
+
+    result = { "success": False, "data": [] }
+    code = 500
 
     if request.method == 'GET':
-        result["data"] = get(db, cursor, tablename, value)
+        result["data"], code = prints.getPrint(db, cursor, status)
+        result["success"] = True
+    cloDB(db)
+    
+    return jsonify(result), code
+
+
+@app.route('/job', methods=['POST'])
+def jobPostHandler():
+    db, cursor = conDB()
+
+    result = { "success": False, "data": [] }
+    code = 500
+    result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
+
+    cloDB(db)
+
+    return jsonify(result), code
+
+
+# @app.route('/job/', defaults={'status': None, 'sessionId': None}, methods=['POST'])
+@app.route('/job/<status>/<sessionId>', methods=['GET'])
+def jobHandler(status, sessionId):
+    db, cursor = conDB()
+
+    info = { "status": status, "sessionId": sessionId}
+
+    result = { "success": False, "data": [] }
+    code = 500
+
+    if request.method == 'GET':
+        result["data"], result["success"], code = prints.getJob(db, cursor, info)
+    # elif request.method == 'POST':
+    #     result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
     else:
-        print("Error. Invalid method")
+        result["data"] = "Invalid method"
+        result["success"] = False
+        code = 400
     
     cloDB(db)
-    return jsonify(result)
-
-
-@app.route('/add', methods=['POST'])
-def addPrint():
-    db, cursor = conDB()
-    # Filename:     usrid-amount-date-date_till-filename-name-time-length-weight-price
-
-    # TODO: Format filename and add to tables
-    postPrint.newPrint(db, cursor, request.json)
-
-    cloDB(db)
-    return ""
-
-
-@app.route('/user/<type>', methods=['POST'])
-def userLogReg(type):
-    db, cursor = conDB()
-
-    sessionId = "Error"
-
-    if type == "login":
-        sessionId = user.login(db, cursor, request.json)
-    elif type == "register":
-        print("test")
-        sessionId = user.register(db, cursor, request.json)
-
-    cloDB(db)
-    return sessionId
-
-
-@app.route('/user/changepw', methods=['POST'])
-def changePassword():
-    db, cursor = conDB()
-    # TODO: Maybe move to upper user route
-    # Get sessionId, password to verify that the user is logged in and knows the password
-    # return new sessionId so the user can stay logged in
-    sessionId = user.login(db, cursor, request.json)
-
-    cloDB(db)
-    return '{"sessionId": %s}' % sessionId
-
-
-@app.route('/user/<type>/<sessionId>', methods=['GET'])
-def getUserHistory(type, sessionId):
-    db, cursor = conDB()
-    
-    result = { "data": [] }
-    if type == "todo":
-        type = "To Do"
-
-    elif type == "done":
-        type = "Done" 
-
-    elif type == "failed":
-        type = "Failed"
-
-    result["data"] = userPrints.getUserPrints(db, cursor, sessionId, type)
-
-    cloDB(db)
-    return jsonify(result)
-
+    return jsonify(result), code
 
 @app.route('/file', methods=['POST'])
 def fileHandler():
-    # TODO: Check if filename is in database
     db, cursor = conDB()
-    # TODO: Check if count syntax is correct
     sql = "SELECT count(id) from prints where filename = '%s'" % (request.files['file'].filename.replace(".gcode", ""))
     cursor.execute(sql)
 
+    result = {"success": False, "data": []}
+
     if cursor.fetchall()[0][0] > 0:
         if 'file' not in request.files:
-            print('no file')
-            return ""
-
-        file = request.files['file']
-        
-        if file.filename == "":
-            print("no selected file")
-            return ""
-
-        if file:
-            print(file.filename)
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            # os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            return ""
+            result["success"] = False
+            result["data"] = "No file"
+            cloDB(db)
+        else:
+            # TODO: Add following under else
+            file = request.files['file']
+            
+            if file.filename == "":
+                result["success"] = False
+                result["data"] = "No filename"
+                cloDB(db)
+            else:
+                # TODO: Add following under else
+                if file:
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    
+                    result["success"] = True
+                    result["data"] = "Successfully uploaded File"
+                    cloDB(db)
+                    return jsonify(result), 200
 
     cloDB(db)
+    result["success"] = False
+    result["data"] = "No database reference to filename" 
+    return jsonify(result), 409
 
-    return ""
-    
 # ------------------------------------------------------------------------
 
 
@@ -141,14 +141,9 @@ def conDB():
 
     return db, cursor
 
+
 def cloDB(db):
     db.close()
-
-def get(db, cursor, tablename, value):
-    if tablename == 'queue':
-        return queue.get(db, cursor, value)
-    if tablename == 'status':
-        return status.get(db, cursor)
 
 
 # Main
