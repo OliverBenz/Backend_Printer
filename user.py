@@ -11,7 +11,7 @@ def login(db, cursor, info):
     # print(result[0][0].encode('utf-8'))
 
     if compare(info["password"], result[0][0]):
-        sql  = "SELECT sessionId FROM user WHERE name = '%s'" % (info["username"])
+        sql  = "SELECT sessionId FROM user WHERE email = '%s'" % (info["email"])
         cursor.execute(sql)
         result = cursor.fetchall()
         

@@ -5,6 +5,6 @@ INSERT INTO user VALUES(
     %s,
     %s,
     0.00,
-    (SELECT s.id from status s WHERE s.name = "Active"),
+    (SELECT s.id from status s WHERE s.name = "Registered"),
     %s
 )
