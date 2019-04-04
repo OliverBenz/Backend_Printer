@@ -34,7 +34,7 @@ def register(db, cursor, info):
     if cursor.rowcount == 0:
         return "Error", False, 400
     else:
-        return sessionId, True, 200
+        return "Successful", True, 200
 
 
 def changePW(db, cursor, info):
