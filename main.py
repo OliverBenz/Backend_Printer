@@ -11,14 +11,8 @@ UPLOAD_FOLDER = 'D:/Documents/Repositories/printer/printerBackend/files'
 ALLOWED_EXTENSIONS = set(['gcode'])
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/job/*": {"origins": "*"}})
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# httpHeaders = {
-#     "Content-Type": "application/json",
-#     "Access-Control-Allow-Origin": "*",
-#     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE",
-# }
 
 @app.route('/user/<type>', methods=['POST'])
 def userHandler(type):
