@@ -72,18 +72,33 @@ def getJob(db, cursor, info):
 def postJob(db, cursor, obj):
     # ----- Check if user is logged in -----
     if user.checkLoggedIn(cursor, obj["sessionId"]):
-        # ----- Add Print -----
-        fd = open('scripts/post/print.sql', 'r')
-        sql = fd.read()
-        fd.close()
-
-        val = (obj["filename"], obj["name"], obj["time"], 0.00, obj["length"], obj["weight"], obj["price"])
         
-        cursor.execute(sql, val)
+        # ----- Check if filename already exists -----
+        sql = "SELECT count(id) from prints WHERE filename = '%s'" % obj["filename"]
+        cursor.execute(sql)
 
-        # ----- Catch failed add -----
-        if cursor.rowcount == 0:
-            return "Error print add", 409
+        printId = 0
+        # ----- If Filename exsts: getId - If not: insert -----
+        if cursor.fetchall()[0][0] > 0:
+            sql = "SELECT id from prints WHERE filename = '%s'" % obj["filename"]
+            cursor.execute(sql)
+            printId = cursor.fetchall()[0][0]
+        else:
+            # ----- Add Print -----
+            fd = open('scripts/post/print.sql', 'r')
+            sql = fd.read()
+            fd.close()
+            
+            val = (obj["filename"], obj["name"], obj["time"], 0.00, obj["length"], obj["weight"], obj["price"])
+            
+            cursor.execute(sql, val)
+
+            # ----- Catch failed add -----
+            if cursor.rowcount == 0:
+                return "Error print add", 409
+
+            printId = int(cursor.lastrowid)
+
 
         # ----- Add Job -----
         fd = open('scripts/post/job.sql', 'r')
@@ -94,7 +109,7 @@ def postJob(db, cursor, obj):
             obj["date_until"] = "9999-01-01"
 
         # Not with cursor.lastrowid
-        val = (obj["sessionId"], obj["amount"], obj["date"], obj["date_until"], "9999-01-01", obj["notes"], int(cursor.lastrowid))
+        val = (obj["sessionId"], obj["amount"], obj["date"], obj["date_until"], "9999-01-01", obj["notes"], printId)
 
         # TODO: More beautiful solution
         cursor.execute("SET FOREIGN_KEY_CHECKS=0")

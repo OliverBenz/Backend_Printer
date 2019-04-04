@@ -10,9 +10,12 @@ def login(db, cursor, info):
     if compare(info["password"], result[0][0]):
         sql  = "SELECT sessionId FROM user WHERE email = '%s'" % (info["email"])
         cursor.execute(sql)
-        result = cursor.fetchall()
-        
-        return result[0][0], True, 200
+        sessionId = cursor.fetchall()[0][0]
+
+        if checkUserGroup(cursor, sessionId) != "Registered":
+            return sessionId, True, 200
+        else:
+            return "User not verified", False, 403
     else:
         return "Error", False, 400
 
@@ -40,6 +43,10 @@ def changePW(db, cursor, info):
     return "Function not yet implemented", False, 400
 
 
+def getGroup(db, cursor, info):
+    return checkUserGroup(cursor, info["sessionId"]), True, 200
+
+
 def checkLoggedIn(cursor, sessionId):
     status = False
 
@@ -49,9 +56,17 @@ def checkLoggedIn(cursor, sessionId):
 
     if result[0][0] == 1:
         status = True
-    
+
     return status
 
+def checkUserGroup(cursor, sessionId):
+    fd = open('scripts/get/userGroup.sql', 'r')
+    sql = fd.read() % sessionId
+    fd.close()
+
+    cursor.execute(sql)
+
+    return cursor.fetchall()[0][0]
 
 # ----- Helper Functions -----
 def genSessionId(username, password):

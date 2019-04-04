@@ -24,10 +24,12 @@ def userHandler(type):
 
     if type == 'login':
         result["data"], result["success"], code = user.login(db, cursor, request.json)
-    if type == 'register':
+    elif type == 'register':
         result["data"], result["success"], code = user.register(db, cursor, request.json)
-    if type == 'changepw':
+    elif type == 'changepw':
         result["data"], result["success"], code = user.changePW(db, cursor, request.json)
+    elif type == 'group':
+        result["data"], result["success"], code = user.getGroup(db, cursor, request.json)
     
     cloDB(db)
 
