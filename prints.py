@@ -25,7 +25,8 @@ def getPrint(db, cursor, status):
         }
         prints.append(data)
     
-    return prints, 200
+    return prints, True, 200
+
 
 def getJob(db, cursor, info):
     # ----- Check if user is logged in -----
@@ -56,8 +57,8 @@ def getJob(db, cursor, info):
                 "spoolId": row[10],
                 "amount": row[11],
                 "date": row[13].strftime('%Y-%m-%d'),
-                "date_until": row[14].strftime('%Y-%m-%d'),
-                "date_done": row[15].strftime('%Y-%m-%d'),
+                "dateUntil": row[14].strftime('%Y-%m-%d'),
+                "dateDone": row[15].strftime('%Y-%m-%d'),
                 "notes": row[16]
             }
             
@@ -66,7 +67,6 @@ def getJob(db, cursor, info):
         return prints, True, 200
 
     return "Not logged in", False, 403
-
 
 
 def postJob(db, cursor, obj):

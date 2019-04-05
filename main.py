@@ -5,7 +5,7 @@ import json
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
-import user, prints
+import user, prints, admin
 
 UPLOAD_FOLDER = 'D:/Documents/Repositories/printer/printerBackend/files'
 ALLOWED_EXTENSIONS = set(['gcode'])
@@ -44,8 +44,7 @@ def printHandler(status):
     code = 500
 
     if request.method == 'GET':
-        result["data"], code = prints.getPrint(db, cursor, status)
-        result["success"] = True
+        result["data"], result["success"], code = prints.getPrint(db, cursor, status)
     cloDB(db)
     
     return jsonify(result), code
@@ -85,6 +84,38 @@ def jobHandler(status, sessionId):
     
     cloDB(db)
     return jsonify(result), code
+
+
+@app.route('/admin/<table>/<status>/<sessionId>', methods=['GET'])
+def adminGetHandler(table, status, sessionId):
+    db, cursor = conDB()
+
+    result = { "success": False, "data": [] }
+    code = 500
+    if table == "jobs":
+        result["data"], result["success"], code = admin.getQueue(db, cursor, status, sessionId)
+    elif table == "user":
+        result["data"], result["success"], code = admin.getUsers(db, cursor, status, sessionId)
+
+    cloDB(db)
+
+    return jsonify(result), code
+
+
+@app.route('/admin/change', methods=['POST'])
+def adminPostHandler():
+    db, cursor = conDB()
+
+    result = { "success": False, "data": [] }
+    code = 500
+
+    result["data"], result["success"], code = admin.changeJob(db, cursor, request.json)
+
+    cloDB(db)
+
+    return jsonify(result), code
+     
+
 
 @app.route('/file', methods=['POST'])
 def fileHandler():
