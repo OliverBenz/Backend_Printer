@@ -13,23 +13,25 @@ ALLOWED_EXTENSIONS = set(['gcode'])
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
-@app.route('/user/<type>', methods=['POST'])
-def userHandler(type):
+@app.route('/user/<type>', methods=['POST'], defaults={'sessionId': None})
+@app.route('/user/<type>/<sessionId>', methods=['GET'])
+def userHandler(type, sessionId):
     db, cursor = conDB()
-    
+
     result = { "success": False, "data": [] }
-    # sessionId = ""
     code = 500
 
-    if type == 'login':
-        result["data"], result["success"], code = user.login(db, cursor, request.json)
-    elif type == 'register':
-        result["data"], result["success"], code = user.register(db, cursor, request.json)
-    elif type == 'changepw':
-        result["data"], result["success"], code = user.changePW(db, cursor, request.json)
-    elif type == 'group':
-        result["data"], result["success"], code = user.getGroup(db, cursor, request.json)
+    if request.method == 'POST':
+        if type == 'login':
+            result["data"], result["success"], code = user.login(db, cursor, request.json)
+        elif type == 'register':
+            result["data"], result["success"], code = user.register(db, cursor, request.json)
+        elif type == 'changepw':
+            result["data"], result["success"], code = user.changePW(db, cursor, request.json)
+    
+    elif request.method == 'GET':
+        if type == 'group':
+            result["data"], result["success"], code = user.getGroup(db, cursor, sessionId)
     
     cloDB(db)
 

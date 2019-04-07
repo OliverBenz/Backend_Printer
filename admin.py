@@ -6,7 +6,7 @@ def getQueue(db, cursor, status, sessionId):
     
     if not user.checkLoggedIn(cursor, sessionId):
         return "Not logged in", False, 403
-    elif not user.checkUserGroup(cursor, sessionId) == "Admin":
+    elif not user.checkUserGroup(cursor, sessionId) == "Administrator":
         return "Not admin", False, 401
     else:
         fd = open('scripts/get/admin/job.sql', 'r')
@@ -42,7 +42,7 @@ def getQueue(db, cursor, status, sessionId):
 def changeJob(db, cursor, info):
     if not user.checkLoggedIn(cursor, info["sessionId"]):
         return "Not logged in", False, 403
-    elif not user.checkUserGroup(cursor, info["sessionId"]) == "Admin":
+    elif not user.checkUserGroup(cursor, info["sessionId"]) == "Administrator":
         return "Not admin", False, 401
     else:
         # TODO: Get users
@@ -52,7 +52,7 @@ def changeJob(db, cursor, info):
 def getUsers(db, cursor, status, sessionId):
     if not user.checkLoggedIn(cursor, sessionId):
         return "Not logged in", False, 403
-    elif not user.checkUserGroup(cursor, sessionId) == "Admin":
+    elif not user.checkUserGroup(cursor, sessionId) == "Administrator":
         return "Not admin", False, 401
     else:
         fd = open('scripts/get/admin/user.sql', 'r')

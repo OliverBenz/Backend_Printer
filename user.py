@@ -39,14 +39,20 @@ def register(db, cursor, info):
 
 def changePW(db, cursor, info):
     # TODO: Add changePW function
+    # Get user password with sessionId
+    # Check if password is correct
+    # Update password to new
+    # Update sessionId to new
+    # Return new sessionId
 
     return "Function not yet implemented", False, 400
 
 
-def getGroup(db, cursor, info):
-    return checkUserGroup(cursor, info["sessionId"]), True, 200
+def getGroup(db, cursor, sessionId):
+    return checkUserGroup(cursor, sessionId), True, 200
 
 
+# ----- Helper Functions -----
 def checkLoggedIn(cursor, sessionId):
     status = False
 
@@ -59,6 +65,7 @@ def checkLoggedIn(cursor, sessionId):
 
     return status
 
+
 def checkUserGroup(cursor, sessionId):
     fd = open('scripts/get/userGroup.sql', 'r')
     sql = fd.read() % sessionId
@@ -68,7 +75,7 @@ def checkUserGroup(cursor, sessionId):
 
     return cursor.fetchall()[0][0]
 
-# ----- Helper Functions -----
+
 def genSessionId(username, password):
     username = encrypt(username)
     password = encrypt(password)
@@ -82,6 +89,7 @@ def genSessionId(username, password):
 # ----- Bcrypt Functions -----
 def compare(password, hash):
     return bcrypt.checkpw(password.encode('utf-8'), hash.encode('utf-8'))
+
 
 def encrypt(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
