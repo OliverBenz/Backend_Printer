@@ -27,7 +27,7 @@ def register(db, cursor, info):
 
     sessionId = genSessionId(info["username"], info["password"])
     val = (info["username"], info["email"], encrypt(info["password"]), sessionId)
-    
+
     cursor.execute(sql, val)
     db.commit()
     
@@ -38,6 +38,27 @@ def register(db, cursor, info):
 
 
 def changePW(db, cursor, info):
+    sql = "SELECT password FROM user WHERE sessionId = '%s'" % info["sessionId"]
+    cursor.execute(sql)
+
+    if compare(info["passwordOld"], cursor.fetchall()[0][0]):
+        sessionId = genSessionId(info["passwordOld"], info["passwordNew"])
+
+        fd = open('scripts/post/userChangePw.sql', 'r')
+        sql = fd.read() % (encrypt(info["passwordNew"]), sessionId, info["sessionId"])
+        fd.close()
+
+        cursor.execute(sql)
+        db.commit()
+
+        if cursor.rowcount == 0:
+            return "Could not change password", False, 500
+        else:
+            return sessionId, True, 200
+
+    else:
+        return "Wrong password", False, 401
+
     # TODO: Add changePW function
     # Get user password with sessionId
     # Check if password is correct
@@ -83,7 +104,7 @@ def genSessionId(username, password):
     sessionId = username[0:round(len(username) / 2)].lower() + password[round(len(password) / 2):].upper()
 
     # TODO: Create real session ID
-    return str(sessionId).replace("/", "-").replace("'", "")
+    return str(sessionId).replace("/", "-").replace("b'", "").replace("'", "")
 
 
 # ----- Bcrypt Functions -----
@@ -92,5 +113,5 @@ def compare(password, hash):
 
 
 def encrypt(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return str(bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())).replace("b'", "").replace("'", "")
 
