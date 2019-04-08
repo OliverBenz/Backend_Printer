@@ -4,13 +4,24 @@ from flask import Flask, request, jsonify
 import json
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
+import platform
 
 import user, prints, admin
 
-UPLOAD_FOLDER = 'D:/Documents/Repositories/printer/printerBackend/files'
+UPLOAD_FOLDER = ''
+if platform.system() == "Linux":
+    UPLOAD_FOLDER = "/var/www/printerBackend/files"
+else:
+    UPLOAD_FOLDER = "D:/Desktop/files"
+
 ALLOWED_EXTENSIONS = set(['gcode'])
 
 app = Flask(__name__)
+httpHeaders = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE",
+}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/user/<type>', methods=['POST'], defaults={'sessionId': None})
@@ -35,7 +46,7 @@ def userHandler(type, sessionId):
     
     cloDB(db)
 
-    return jsonify(result), code
+    return jsonify(result), code, httpHeaders
 
 
 @app.route('/print/<status>', methods=['GET'])
@@ -49,7 +60,7 @@ def printHandler(status):
         result["data"], result["success"], code = prints.getPrint(db, cursor, status)
     cloDB(db)
     
-    return jsonify(result), code
+    return jsonify(result), code, httpHeaders
 
 
 @app.route('/job', methods=['POST'])
@@ -62,7 +73,7 @@ def jobPostHandler():
 
     cloDB(db)
 
-    return jsonify(result), code
+    return jsonify(result), code, httpHeaders
 
 
 # @app.route('/job/', defaults={'status': None, 'sessionId': None}, methods=['POST'])
@@ -85,7 +96,7 @@ def jobHandler(status, sessionId):
         code = 400
     
     cloDB(db)
-    return jsonify(result), code
+    return jsonify(result), code, httpHeaders
 
 
 @app.route('/admin/<table>/<status>/<sessionId>', methods=['GET'])
@@ -101,7 +112,7 @@ def adminGetHandler(table, status, sessionId):
 
     cloDB(db)
 
-    return jsonify(result), code
+    return jsonify(result), code, httpHeaders
 
 
 @app.route('/admin/change', methods=['POST'])
@@ -115,7 +126,7 @@ def adminPostHandler():
 
     cloDB(db)
 
-    return jsonify(result), code
+    return jsonify(result), code, httpHeaders
      
 
 
@@ -149,12 +160,12 @@ def fileHandler():
                     result["success"] = True
                     result["data"] = "Successfully uploaded File"
                     cloDB(db)
-                    return jsonify(result), 200
+                    return jsonify(result), 200, httpHeaders
 
     cloDB(db)
     result["success"] = False
     result["data"] = "No database reference to filename" 
-    return jsonify(result), 409
+    return jsonify(result), 409, httpHeaders
 
 # ------------------------------------------------------------------------
 
