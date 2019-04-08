@@ -61,6 +61,7 @@ def getUsers(db, cursor, status, sessionId):
 
         cursor.execute(sql)
         result = cursor.fetchall()
+
         userList = []
 
         for row in result:
