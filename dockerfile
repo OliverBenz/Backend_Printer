@@ -13,4 +13,4 @@ RUN pip install -r requirements.txt
 EXPOSE 3004
 
 # Run app.py when the container launches
-CMD ["python", "./rest_server.py"]
+CMD ["python", "./main.py"]
