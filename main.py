@@ -9,6 +9,7 @@ import platform
 import user, prints, admin
 
 UPLOAD_FOLDER = ''
+
 if platform.system() == "Linux":
     UPLOAD_FOLDER = "/var/www/printerBackend/files"
 else:
@@ -18,11 +19,13 @@ ALLOWED_EXTENSIONS = set(['gcode'])
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
+
 httpHeaders = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE",
 }
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/user/<type>', methods=['POST'], defaults={'sessionId': None})

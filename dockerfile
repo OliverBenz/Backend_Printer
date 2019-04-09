@@ -13,4 +13,4 @@ RUN pip install -r requirements.txt
 EXPOSE 3004
 
 # Run app.py when the container launches
-CMD ["python", "./main.py"]
+CMD ["python", "~/var/www/printerBackend/main.py"]
