@@ -57,11 +57,15 @@ def getJob(db, cursor, info):
                 "spoolId": row[10],
                 "amount": row[11],
                 "date": row[13].strftime('%Y-%m-%d'),
-                "dateUntil": row[14].strftime('%Y-%m-%d'),
-                "dateDone": row[15].strftime('%Y-%m-%d'),
+                "dateUntil": "",
+                "dateDone": "",
                 "notes": row[16]
             }
-            
+            if row[14]:
+                data["dateUntil"] = row[14].strftime('%Y-%m-%d')
+            if row[15]:
+                data["dateDone"] = row[15].strftime('%Y-%m-%d')
+    
             prints.append(data)
 
         return prints, True, 200

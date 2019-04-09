@@ -11,7 +11,7 @@ import user, prints, admin
 UPLOAD_FOLDER = ''
 
 if platform.system() == "Linux":
-    UPLOAD_FOLDER = "~/var/www/printerbackend/files"
+    UPLOAD_FOLDER = "./files"
 else:
     UPLOAD_FOLDER = "D:/Desktop/files"
 
