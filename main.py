@@ -17,6 +17,7 @@ else:
 ALLOWED_EXTENSIONS = set(['gcode'])
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 httpHeaders = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
