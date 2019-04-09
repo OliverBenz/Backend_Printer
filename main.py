@@ -176,9 +176,10 @@ def fileHandler():
 
 def conDB():
     db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
+        host="172.17.0.1",
+        user="oliver",
+        passwd="1234",
+        port="3306",
         database="3d_printer"
     )
     cursor = db.cursor()
