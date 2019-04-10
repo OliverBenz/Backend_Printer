@@ -12,7 +12,7 @@ def getPrint(db, cursor, status):
     cursor.execute(sql)
     result = cursor.fetchall()
     prints = []
-    
+
     for row in result:
         data = {
             "id": row[0],
@@ -78,13 +78,13 @@ def postJob(db, cursor, obj):
     if user.checkLoggedIn(cursor, obj["sessionId"]):
         
         # ----- Check if filename already exists -----
-        sql = "SELECT count(id) from prints WHERE filename = '%s'" % obj["filename"]
+        sql = "SELECT count(id) from print WHERE filename = '%s'" % obj["filename"]
         cursor.execute(sql)
 
         printId = 0
         # ----- If Filename exsts: getId - If not: insert -----
         if cursor.fetchall()[0][0] > 0:
-            sql = "SELECT id from prints WHERE filename = '%s'" % obj["filename"]
+            sql = "SELECT id from print WHERE filename = '%s'" % obj["filename"]
             cursor.execute(sql)
             printId = cursor.fetchall()[0][0]
         else:

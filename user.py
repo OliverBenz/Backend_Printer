@@ -70,7 +70,12 @@ def changePW(db, cursor, info):
 
 
 def getGroup(db, cursor, sessionId):
-    return checkUserGroup(cursor, sessionId), True, 200
+    group = checkUserGroup(cursor, sessionId)
+    
+    if group:
+        return group, True, 200
+    else:
+        return "Error", False, 500
 
 
 # ----- Helper Functions -----

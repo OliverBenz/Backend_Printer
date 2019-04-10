@@ -8,17 +8,17 @@ import platform
 
 import user, prints, admin
 
-UPLOAD_FOLDER = ''
+UPLOAD_FOLDER = '/var/www/backend/files'
 
-if platform.system() == "Linux":
-    UPLOAD_FOLDER = "./files"
-else:
-    UPLOAD_FOLDER = "D:/Desktop/files"
+if not platform.system() == "Linux":
+    os.mkdir("D:/Desktop/file")
+    UPLOAD_FOLDER = "D:/Desktop/file"
 
 ALLOWED_EXTENSIONS = set(['gcode'])
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+# CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 httpHeaders = {
     "Content-Type": "application/json",
@@ -28,8 +28,8 @@ httpHeaders = {
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/user/<type>', methods=['POST'], defaults={'sessionId': None})
-@app.route('/user/<type>/<sessionId>', methods=['GET'])
+@app.route('/user/<type>', defaults={'sessionId': None})
+@app.route('/user/<type>/<sessionId>', methods=['GET', 'POST'])
 def userHandler(type, sessionId):
     db, cursor = conDB()
 
@@ -137,7 +137,7 @@ def adminPostHandler():
 @app.route('/file', methods=['POST'])
 def fileHandler():
     db, cursor = conDB()
-    sql = "SELECT count(id) from prints where filename = '%s'" % (request.files['file'].filename.replace(".gcode", ""))
+    sql = "SELECT count(id) from print where filename = '%s'" % (request.files['file'].filename.replace(".gcode", ""))
     cursor.execute(sql)
 
     result = {"success": False, "data": []}
@@ -182,6 +182,12 @@ def conDB():
         port="3306",
         database="3d_printer"
     )
+    # db = mysql.connector.connect(
+    #     host="localhost",
+    #     user="root",
+    #     passwd="",
+    #     database="3d_printer"
+    # )
     cursor = db.cursor()
 
     return db, cursor
