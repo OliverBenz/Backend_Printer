@@ -1,4 +1,4 @@
-INSERT INTO prints VALUES(
+INSERT INTO print VALUES(
 	0,
 	%s,
 	%s,

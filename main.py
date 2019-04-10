@@ -109,7 +109,7 @@ def adminGetHandler(table, status, sessionId):
 
     result = { "success": False, "data": [] }
     code = 500
-    if table == "jobs":
+    if table == "job":
         result["data"], result["success"], code = admin.getQueue(db, cursor, status, sessionId)
     elif table == "user":
         result["data"], result["success"], code = admin.getUsers(db, cursor, status, sessionId)
