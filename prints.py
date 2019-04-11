@@ -20,8 +20,7 @@ def getPrint(db, cursor, status):
             "name": row[2],
             "time": row[3],
             "length": row[4],
-            "weight": row[5],
-            "price": row[6]
+            "weight": row[5]
         }
         prints.append(data)
     
@@ -45,6 +44,7 @@ def getJob(db, cursor, info):
 
         # Ignore row8,9 because id, userid not necessary
         for row in result:
+            print(row)
             data = {
                 "id": row[0],
                 "filename": row[1],
@@ -53,18 +53,17 @@ def getJob(db, cursor, info):
                 "timeReal": row[4],
                 "length": row[5],
                 "weight": row[6],
-                "price": row[7],
-                "spoolId": row[10],
-                "amount": row[11],
-                "date": row[13].strftime('%Y-%m-%d'),
+                "spoolId": row[9],
+                "amount": row[10],
+                "date": row[12].strftime('%Y-%m-%d'),
                 "dateUntil": "",
                 "dateDone": "",
-                "notes": row[16]
+                "notes": row[15]
             }
+            if row[13]:
+                data["dateUntil"] = row[13].strftime('%Y-%m-%d')
             if row[14]:
-                data["dateUntil"] = row[14].strftime('%Y-%m-%d')
-            if row[15]:
-                data["dateDone"] = row[15].strftime('%Y-%m-%d')
+                data["dateDone"] = row[14].strftime('%Y-%m-%d')
     
             prints.append(data)
 
@@ -93,7 +92,7 @@ def postJob(db, cursor, obj):
             sql = fd.read()
             fd.close()
             
-            val = (obj["filename"], obj["name"], obj["time"], 0.00, obj["length"], obj["weight"], obj["price"])
+            val = (obj["filename"], obj["name"], obj["time"], 0.00, obj["length"], obj["weight"])
             
             cursor.execute(sql, val)
 
@@ -124,3 +123,14 @@ def postJob(db, cursor, obj):
 
         return "Successfully added Job", True, 200
     return "Not logged in", False, 403
+
+
+def calcPrice(db, cursor, data):
+    sql = "SELECT weight, price FROM spool WHERE id='%s'" % data["spoolId"]
+    cursor.execute(sql)
+
+    spool = cursor.fetchall()
+    # price = (spool.price / spool.weight) * print.weight
+    price = (float(spool[0][1]) / float(spool[0][0])) * float(data["printWeight"])
+
+    return str(round(price, 2)), True, 200

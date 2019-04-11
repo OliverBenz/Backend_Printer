@@ -11,7 +11,7 @@ import user, prints, admin
 UPLOAD_FOLDER = '/var/www/backend/files'
 
 if not platform.system() == "Linux":
-    os.mkdir("D:/Desktop/file")
+    # os.mkdir("D:/Desktop/file")
     UPLOAD_FOLDER = "D:/Desktop/file"
 
 ALLOWED_EXTENSIONS = set(['gcode'])
@@ -172,23 +172,38 @@ def fileHandler():
     result["data"] = "No database reference to filename" 
     return jsonify(result), 409, httpHeaders
 
+
+@app.route('/price', methods=['POST'])
+def priceHandler():
+    db, cursor = conDB()
+    
+    result = {"success": False, "data": []}
+    code = 500
+
+    # Request.json  - printWeight, spoolId
+    # Return        - price
+    result["data"], result["success"], code = prints.calcPrice(db, cursor, request.json)
+
+    cloDB(db)
+    return jsonify(result), code, httpHeaders
+
 # ------------------------------------------------------------------------
 
 
 def conDB():
-    db = mysql.connector.connect(
-        host="172.17.0.1",
-        user="oliver",
-        passwd="1234",
-        port="3306",
-        database="3d_printer"
-    )
     # db = mysql.connector.connect(
-    #     host="localhost",
-    #     user="root",
-    #     passwd="",
+    #     host="172.17.0.1",
+    #     user="oliver",
+    #     passwd="1234",
+    #     port="3306",
     #     database="3d_printer"
     # )
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        database="3d_printer"
+    )
     cursor = db.cursor()
 
     return db, cursor

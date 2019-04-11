@@ -26,20 +26,19 @@ def getQueue(db, cursor, status, sessionId):
                 "timeReal": row[3],
                 "length": row[4],
                 "weight": row[5],
-                "price": row[6],
-                "id": row[7],
-                "date": row[8].strftime('%Y-%m-%d'),
+                "id": row[6],
+                "date": row[7].strftime('%Y-%m-%d'),
                 "dateUntil": "",
                 "dateDone": "",
-                "notes": row[11],
-                "user": row[12],
-                "status": row[13],
-                "amount": row[14]
+                "notes": row[10],
+                "user": row[11],
+                "status": row[12],
+                "amount": row[13]
             }
+            if row[8]:
+                data["dateUntil"] = row[8].strftime('%Y-%m-%d')
             if row[9]:
-                data["dateUntil"] = row[9].strftime('%Y-%m-%d')
-            if row[10]:
-                data["dateDone"] = row[10].strftime('%Y-%m-%d')
+                data["dateDone"] = row[9].strftime('%Y-%m-%d')
 
             dataList.append(data)
         return dataList, True, 200

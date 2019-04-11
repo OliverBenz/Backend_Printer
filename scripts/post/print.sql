@@ -5,6 +5,5 @@ INSERT INTO print VALUES(
 	%s,
 	%s,
 	%s,
-	%s,
 	%s
 );
