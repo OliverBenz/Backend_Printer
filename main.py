@@ -68,35 +68,38 @@ def printHandler(status):
     return jsonify(result), code, httpHeaders
 
 
-@app.route('/job', methods=['POST'])
-def jobPostHandler():
-    db, cursor = conDB()
+# @app.route('/job', methods=['POST'])
+# def jobPostHandler():
+#     db, cursor = conDB()
 
-    result = { "success": False, "data": [] }
-    code = 500
-    result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
+#     result = { "success": False, "data": [] }
+#     code = 500
+#     result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
 
-    cloDB(db)
+#     cloDB(db)
 
-    return jsonify(result), code, httpHeaders
+#     return jsonify(result), code, httpHeaders
 
 
-# @app.route('/job/', defaults={'status': None, 'sessionId': None}, methods=['POST'])
+
+@app.route('/job', methods=['POST'], defaults={'status': None, 'sessionId': None})
+@app.route('/job', methods=['PUT'], defaults={'status': None, 'sessionId': None})
 @app.route('/job/<status>/<sessionId>', methods=['GET'])
 def jobHandler(status, sessionId):
     db, cursor = conDB()
-
-    info = { "status": status, "sessionId": sessionId}
 
     result = { "success": False, "data": [] }
     code = 500
 
     if request.method == 'GET':
+        info = { "status": status, "sessionId": sessionId}
         result["data"], result["success"], code = prints.getJob(db, cursor, info)
-    # elif request.method == 'POST':
-    #     result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
+    elif request.method == 'POST':
+        result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
+    elif request.method == 'PUT':
+        result["data"], result["success"], code = prints.changeJob(db, cursor, request.json)
     else:
-        result["data"] = "Invalid method"
+        result["data"] = "Invalid Method"
         result["success"] = False
         code = 400
     
@@ -191,19 +194,19 @@ def priceHandler():
 
 
 def conDB():
-    db = mysql.connector.connect(
-        host="172.17.0.1",
-        user="oliver",
-        passwd="1234",
-        port="3306",
-        database="3d_printer"
-    )
     # db = mysql.connector.connect(
-    #     host="localhost",
-    #     user="root",
-    #     passwd="",
+    #     host="172.17.0.1",
+    #     user="oliver",
+    #     passwd="1234",
+    #     port="3306",
     #     database="3d_printer"
     # )
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        database="3d_printer"
+    )
     cursor = db.cursor()
 
     return db, cursor

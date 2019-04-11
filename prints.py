@@ -125,6 +125,21 @@ def postJob(db, cursor, obj):
     return "Not logged in", False, 403
 
 
+def changeJob(db, cursor, info):
+    # TODO: Check if user owns job
+    # sql = "SELECT id from job j WHERE filename = '%s'"
+
+
+    # TODO: Fix: job has no filename
+    # sql = "UPDATE job j SET j.statusId = (Select s.id FROM status s WHERE s.name = '%s') WHERE j.filename = '%s'" % (info["status"], info["filename"])
+    # cursor.execute(sql)
+
+    # if cursor.rowcount == 0:
+    #     return "Could not change status", False, 
+
+    return "Function not implemented yet", False, 500
+
+
 def calcPrice(db, cursor, data):
     sql = "SELECT weight, price FROM spool WHERE id='%s'" % data["spoolId"]
     cursor.execute(sql)
