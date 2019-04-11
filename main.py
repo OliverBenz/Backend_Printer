@@ -29,7 +29,7 @@ httpHeaders = {
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/user/<type>', defaults={'sessionId': None})
+@app.route('/user/<type>', methods=['POST'], defaults={'sessionId': None})
 @app.route('/user/<type>/<sessionId>', methods=['GET', 'POST'])
 def userHandler(type, sessionId):
     db, cursor = conDB()
