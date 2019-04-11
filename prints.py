@@ -126,18 +126,27 @@ def postJob(db, cursor, obj):
 
 
 def changeJob(db, cursor, info):
-    # TODO: Check if user owns job
-    # sql = "SELECT id from job j WHERE filename = '%s'"
+    # Check for date because job can be multiple
+    sql = "SELECT id from job j WHERE j.printId = (SELECT p.id from print p WHERE filename = '%s') AND j.userId = (SELECT u.id FROM user u WHERE u.sessionId = '%s') AND j.date = '%s'" % (info["filename"], info["sessionId"], info["date"])
+    cursor.execute(sql)
+    id = cursor.fetchall()[0][0]
 
+    if id is None:
+        return "Could not locate job", False, 400
+    
+    fd = open('scripts/put/jobStatus.sql', 'r')
+    sql = fd.read() % (info["status"], id)
+    fd.close()
 
-    # TODO: Fix: job has no filename
-    # sql = "UPDATE job j SET j.statusId = (Select s.id FROM status s WHERE s.name = '%s') WHERE j.filename = '%s'" % (info["status"], info["filename"])
-    # cursor.execute(sql)
+    cursor.execute()
 
-    # if cursor.rowcount == 0:
-    #     return "Could not change status", False, 
+    if cursor.rowcount == 1:
+        db.commit()
+        return "Successfully changed status", True, 200
+    else:
+        return "Could not change status", False, 500
 
-    return "Function not implemented yet", False, 500
+    return "Unexpected Error", False, 500
 
 
 def calcPrice(db, cursor, data):

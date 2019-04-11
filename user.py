@@ -44,7 +44,7 @@ def changePW(db, cursor, info):
     if compare(info["passwordOld"], cursor.fetchall()[0][0]):
         sessionId = genSessionId(info["passwordOld"], info["passwordNew"])
 
-        fd = open('scripts/post/userChangePw.sql', 'r')
+        fd = open('scripts/put/userPassword.sql', 'r')
         sql = fd.read() % (encrypt(info["passwordNew"]), sessionId, info["sessionId"])
         fd.close()
 

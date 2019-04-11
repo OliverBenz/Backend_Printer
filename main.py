@@ -94,10 +94,13 @@ def jobHandler(status, sessionId):
     if request.method == 'GET':
         info = { "status": status, "sessionId": sessionId}
         result["data"], result["success"], code = prints.getJob(db, cursor, info)
+    
     elif request.method == 'POST':
         result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
+    
     elif request.method == 'PUT':
         result["data"], result["success"], code = prints.changeJob(db, cursor, request.json)
+    
     else:
         result["data"] = "Invalid Method"
         result["success"] = False
