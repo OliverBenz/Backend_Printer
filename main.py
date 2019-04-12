@@ -196,19 +196,19 @@ def priceHandler():
 
 
 def conDB():
-    # db = mysql.connector.connect(
-    #     host="172.17.0.1",
-    #     user="oliver",
-    #     passwd="1234",
-    #     port="3306",
-    #     database="3d_printer"
-    # )
     db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        passwd="",
+        host="172.17.0.1",
+        user="oliver",
+        passwd="1234",
+        port="3306",
         database="3d_printer"
     )
+    # db = mysql.connector.connect(
+    #     host="localhost",
+    #     user="root",
+    #     passwd="",
+    #     database="3d_printer"
+    # )
     cursor = db.cursor()
 
     return db, cursor
