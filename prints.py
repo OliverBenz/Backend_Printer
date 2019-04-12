@@ -15,7 +15,6 @@ def getPrint(db, cursor, status):
 
     for row in result:
         data = {
-            "id": row[0],
             "filename": row[1],
             "name": row[2],
             "time": row[3],
@@ -42,17 +41,16 @@ def getJob(db, cursor, info):
         result = cursor.fetchall()
         prints = []
 
-        # Ignore row8,9 because id, userid not necessary
         for row in result:
             print(row)
             data = {
-                "id": row[0],
                 "filename": row[1],
                 "name": row[2],
                 "time": row[3],
                 "timeReal": row[4],
                 "length": row[5],
                 "weight": row[6],
+                "jobId": row[7],
                 "spoolId": row[9],
                 "amount": row[10],
                 "date": row[12].strftime('%Y-%m-%d'),
@@ -125,20 +123,21 @@ def postJob(db, cursor, obj):
     return "Not logged in", False, 403
 
 
-def changeJob(db, cursor, info):
-    # Check for date because job can be multiple
-    sql = "SELECT id from job j WHERE j.printId = (SELECT p.id from print p WHERE filename = '%s') AND j.userId = (SELECT u.id FROM user u WHERE u.sessionId = '%s') AND j.date = '%s'" % (info["filename"], info["sessionId"], info["date"])
-    cursor.execute(sql)
-    id = cursor.fetchall()[0][0]
+def changeJobStatus(db, cursor, info):
+    if user.checkUserGroup(cursor, info["sessionId"]) != "Administrator":
+        sql = "SELECT id from job j WHERE j.id = %s AND j.userId = (SELECT u.id from user u where u.sessionId = '%s')" % (info["jobId"], info["sessionId"])
+        cursor.execute(sql)
+        id = cursor.fetchall()[0][0]
 
-    if id is None:
-        return "Could not locate job", False, 400
-    
+
+        if id is None:
+            return "Could not locate job", False, 400
+
     fd = open('scripts/put/jobStatus.sql', 'r')
-    sql = fd.read() % (info["status"], id)
+    sql = fd.read() % (info["status"], info["jobId"])
     fd.close()
 
-    cursor.execute()
+    cursor.execute(sql)
 
     if cursor.rowcount == 1:
         db.commit()

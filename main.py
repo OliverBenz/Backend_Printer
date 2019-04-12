@@ -29,6 +29,7 @@ httpHeaders = {
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
 @app.route('/user/<type>', methods=['POST'], defaults={'sessionId': None})
 @app.route('/user/<type>/<sessionId>', methods=['GET', 'POST'])
 def userHandler(type, sessionId):
@@ -81,7 +82,6 @@ def printHandler(status):
 #     return jsonify(result), code, httpHeaders
 
 
-
 @app.route('/job', methods=['POST'], defaults={'status': None, 'sessionId': None})
 @app.route('/job', methods=['PUT'], defaults={'status': None, 'sessionId': None})
 @app.route('/job/<status>/<sessionId>', methods=['GET'])
@@ -99,7 +99,7 @@ def jobHandler(status, sessionId):
         result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
     
     elif request.method == 'PUT':
-        result["data"], result["success"], code = prints.changeJob(db, cursor, request.json)
+        result["data"], result["success"], code = prints.changeJobStatus(db, cursor, request.json)
     
     else:
         result["data"] = "Invalid Method"
@@ -138,7 +138,6 @@ def adminPostHandler():
     cloDB(db)
 
     return jsonify(result), code, httpHeaders
-     
 
 
 @app.route('/file', methods=['POST'])

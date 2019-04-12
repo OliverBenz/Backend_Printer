@@ -26,7 +26,7 @@ def getQueue(db, cursor, status, sessionId):
                 "timeReal": row[3],
                 "length": row[4],
                 "weight": row[5],
-                "id": row[6],
+                "jobId": row[6],
                 "date": row[7].strftime('%Y-%m-%d'),
                 "dateUntil": "",
                 "dateDone": "",
@@ -63,7 +63,6 @@ def getUsers(db, cursor, status, sessionId):
         fd = open('scripts/get/admin/user.sql', 'r')
         sql = fd.read() % status
         fd.close()
-        print(sql)
 
         cursor.execute(sql)
         result = cursor.fetchall()
