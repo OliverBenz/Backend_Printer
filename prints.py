@@ -124,14 +124,33 @@ def postJob(db, cursor, obj):
 
 
 def changeJobStatus(db, cursor, info):
-    if user.checkUserGroup(cursor, info["sessionId"]) != "Administrator":
-        sql = "SELECT id from job j WHERE j.id = %s AND j.userId = (SELECT u.id from user u where u.sessionId = '%s')" % (info["jobId"], info["sessionId"])
-        cursor.execute(sql)
-        id = cursor.fetchall()[0][0]
+    # Info: ---- sessionId, jobId, status ----
+    if info["status"] == "to-do":
+        info["status"] = "To Do"
+
+    # get group and status of user
+    uGroup = user.checkUserGroup(cursor, info["sessionId"])
+    uStatus = user.checkUserStatus(cursor, info["sessionId"])
+
+    # Check if the user is allowed to make the change
+    if uGroup == "Registered" or uStatus == "Deactivated":
+        return "Not allowed", False, 403
+    elif uGroup != "Administrator" and uStatus == "Active":
+        print("case")
+        stat, code = user.checkJobSession(cursor, info["jobId"], info["sessionId"])
+        if stat == False:
+            return "Can't change job", stat, code
+    else:
+        if uGroup != "Administrator":
+            return "Unexpected Case", False, 500
 
 
-        if id is None:
-            return "Could not locate job", False, 400
+    # User can only change status Removed, to-do
+    # Admin can change all status
+    if uGroup == "User":
+        if info["status"] != "to-do" and info["status"] != "removed":
+            return "Change not allowed", False, 403
+
 
     fd = open('scripts/put/jobStatus.sql', 'r')
     sql = fd.read() % (info["status"], info["jobId"])
@@ -144,8 +163,6 @@ def changeJobStatus(db, cursor, info):
         return "Successfully changed status", True, 200
     else:
         return "Could not change status", False, 500
-
-    return "Unexpected Error", False, 500
 
 
 def calcPrice(db, cursor, data):

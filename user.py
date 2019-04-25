@@ -66,7 +66,7 @@ def changePW(db, cursor, info):
     # Update sessionId to new
     # Return new sessionId
 
-    return "Function not yet implemented", False, 400
+    return "Function not yet implemented", False, 501
 
 
 def getGroup(db, cursor, sessionId):
@@ -101,6 +101,26 @@ def checkUserGroup(cursor, sessionId):
 
     return cursor.fetchall()[0][0]
 
+
+def checkUserStatus(cursor, sessionId):
+    fd = open('scripts/get/userStatus.sql', 'r')
+    sql = fd.read() % sessionId
+    fd.close()
+
+    cursor.execute(sql)
+
+    return cursor.fetchall()[0][0]
+
+
+def checkJobSession(cursor, jobId, sessionId):
+        sql = "SELECT id from job j WHERE j.id = %s AND j.userId = (SELECT u.id from user u where u.sessionId = '%s')" % (jobId, sessionId)
+        cursor.execute(sql)
+        id = cursor.fetchall()[0][0]
+
+        if id is None:
+            return False, 400
+        else:
+            return True, 200
 
 def genSessionId(username, password):
     username = encrypt(username)

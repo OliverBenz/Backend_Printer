@@ -51,7 +51,7 @@ def changeJob(db, cursor, info):
         return "Not admin", False, 401
     else:
         # TODO: Get users
-        return "Function not implemented yet", False, 400
+        return "Function not implemented yet", False, 501
 
 
 def getUsers(db, cursor, status, sessionId):
