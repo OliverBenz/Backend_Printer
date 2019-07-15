@@ -56,7 +56,8 @@ def getJob(db, cursor, info):
                 "date": row[12].strftime('%Y-%m-%d'),
                 "dateUntil": "",
                 "dateDone": "",
-                "notes": row[15]
+                "notes": row[15],
+                "price": calcPrice(db, cursor, row[6], row[9])
             }
             if row[13]:
                 data["dateUntil"] = row[13].strftime('%Y-%m-%d')
@@ -165,12 +166,12 @@ def changeJobStatus(db, cursor, info):
         return "Could not change status", False, 500
 
 
-def calcPrice(db, cursor, data):
-    sql = "SELECT weight, price FROM spool WHERE id='%s'" % data["spoolId"]
+def calcPrice(db, cursor, printWeight, spoolId):
+    sql = "SELECT weight, price FROM spool WHERE id='%s'" % spoolId
     cursor.execute(sql)
 
     spool = cursor.fetchall()
     # price = (spool.price / spool.weight) * print.weight
-    price = (float(spool[0][1]) / float(spool[0][0])) * float(data["printWeight"])
+    price = (float(spool[0][1]) / float(spool[0][0])) * printWeight
 
-    return str(round(price, 2)), True, 200
+    return round(price, 2)

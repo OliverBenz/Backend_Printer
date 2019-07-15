@@ -16,6 +16,7 @@ if not platform.system() == "Linux":
 
 ALLOWED_EXTENSIONS = set(['gcode'])
 
+result = { "success": False, "data": [] }
 
 app = Flask(__name__)
 # CORS(app, resources={r"/*": {"origins": "*"}})
@@ -35,7 +36,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def userHandler(type, sessionId):
     db, cursor = conDB()
 
-    result = { "success": False, "data": [] }
     code = 500
 
     if request.method == 'POST':
@@ -59,7 +59,6 @@ def userHandler(type, sessionId):
 def printHandler(status):
     db, cursor = conDB()
 
-    result = { "success": False, "data": [] }
     code = 500
 
     if request.method == 'GET':
@@ -73,7 +72,6 @@ def printHandler(status):
 # def jobPostHandler():
 #     db, cursor = conDB()
 
-#     result = { "success": False, "data": [] }
 #     code = 500
 #     result["data"], result["success"], code = prints.postJob(db, cursor, request.json)
 
@@ -88,7 +86,6 @@ def printHandler(status):
 def jobHandler(status, sessionId):
     db, cursor = conDB()
 
-    result = { "success": False, "data": [] }
     code = 500
 
     if request.method == 'GET':
@@ -114,7 +111,6 @@ def jobHandler(status, sessionId):
 def adminGetHandler(table, status, sessionId):
     db, cursor = conDB()
 
-    result = { "success": False, "data": [] }
     code = 500
     if table == "job":
         result["data"], result["success"], code = admin.getQueue(db, cursor, status, sessionId)
@@ -130,7 +126,6 @@ def adminGetHandler(table, status, sessionId):
 def adminPostHandler():
     db, cursor = conDB()
 
-    result = { "success": False, "data": [] }
     code = 500
 
     result["data"], result["success"], code = admin.changeJob(db, cursor, request.json)
@@ -145,8 +140,6 @@ def fileHandler():
     db, cursor = conDB()
     sql = "SELECT count(id) from print where filename = '%s'" % (request.files['file'].filename.replace(".gcode", ""))
     cursor.execute(sql)
-
-    result = {"success": False, "data": []}
 
     if cursor.fetchall()[0][0] > 0:
         if 'file' not in request.files:
@@ -177,38 +170,39 @@ def fileHandler():
     result["data"] = "No database reference to filename" 
     return jsonify(result), 409, httpHeaders
 
-
-@app.route('/price', methods=['POST'])
-def priceHandler():
-    db, cursor = conDB()
+# NOTE: Function removed, price added to job get return
+ 
+# @app.route('/price', methods=['POST'])
+# def priceHandler():
+#     db, cursor = conDB()
     
-    result = {"success": False, "data": []}
-    code = 500
+#     code = 500
 
-    # Request.json  - printWeight, spoolId
-    # Return        - price
-    result["data"], result["success"], code = prints.calcPrice(db, cursor, request.json)
+#     # Request.json  - printWeight, spoolId
+#     # Return        - price
+#     result["data"], result["success"], code = prints.calcPrice(db, cursor, request.json["printWeight"], request.json["spoolId"])
 
-    cloDB(db)
-    return jsonify(result), code, httpHeaders
+#     cloDB(db)
+#     return jsonify(result), code, httpHeaders
+
 
 # ------------------------------------------------------------------------
 
 
 def conDB():
-    db = mysql.connector.connect(
-        host="172.17.0.1",
-        user="oliver",
-        passwd="1234",
-        port="3306",
-        database="3d_printer"
-    )
     # db = mysql.connector.connect(
-    #     host="localhost",
-    #     user="root",
-    #     passwd="",
+    #     host="172.17.0.1",
+    #     user="oliver",
+    #     passwd="1234",
+    #     port="3306",
     #     database="3d_printer"
     # )
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="",
+        database="3d_printer"
+    )
     cursor = db.cursor()
 
     return db, cursor
