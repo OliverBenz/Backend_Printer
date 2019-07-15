@@ -8,7 +8,7 @@ import platform
 
 import user, prints, admin
 
-UPLOAD_FOLDER = '/var/www/backend/files'
+UPLOAD_FOLDER = '/usr/files'
 
 if not platform.system() == "Linux":
     # os.mkdir("D:/Desktop/file")
