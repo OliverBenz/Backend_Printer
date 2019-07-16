@@ -17,7 +17,7 @@ def login(db, cursor, info):
         else:
             return "User not verified", False, 403
     else:
-        return "Error", False, 400
+        return "Incorrect password", False, 400
 
 
 def register(db, cursor, info):

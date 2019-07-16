@@ -42,7 +42,6 @@ def getJob(db, cursor, info):
         prints = []
 
         for row in result:
-            print(row)
             data = {
                 "filename": row[1],
                 "name": row[2],
@@ -136,11 +135,13 @@ def changeJobStatus(db, cursor, info):
     # Check if the user is allowed to make the change
     if uGroup == "Registered" or uStatus == "Deactivated":
         return "Not allowed", False, 403
+
     elif uGroup != "Administrator" and uStatus == "Active":
         print("case")
         stat, code = user.checkJobSession(cursor, info["jobId"], info["sessionId"])
         if stat == False:
             return "Can't change job", stat, code
+            
     else:
         if uGroup != "Administrator":
             return "Unexpected Case", False, 500

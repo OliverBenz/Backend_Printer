@@ -43,16 +43,7 @@ def getQueue(db, cursor, status, sessionId):
             dataList.append(data)
         return dataList, True, 200
 
-
-def changeJob(db, cursor, info):
-    if not user.checkLoggedIn(cursor, info["sessionId"]):
-        return "Not logged in", False, 403
-    elif not user.checkUserGroup(cursor, info["sessionId"]) == "Administrator":
-        return "Not admin", False, 401
-    else:
-        # TODO: Get users
-        return "Function not implemented yet", False, 501
-
+# NOTE: Change Job made in user.py
 
 def getUsers(db, cursor, status, sessionId):
     if not user.checkLoggedIn(cursor, sessionId):
@@ -76,4 +67,8 @@ def getUsers(db, cursor, status, sessionId):
                 "email": row[2],
                 "group": row[3]
             })
-        return userList, True, 200 
+        return userList, True, 200
+
+def changeUserGroup():
+
+    return "Function not implemented yet", False, 501
